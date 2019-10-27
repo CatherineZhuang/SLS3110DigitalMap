@@ -1,0 +1,127 @@
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>Grove Park Asset Map</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel='stylesheet' type='text/css' href='styles.css'>
+</head>
+
+<body>
+    <div id='map'></div>
+    <div id='console'>
+        <h1>Grove Park Area Recent Development Projects</h1>
+        <p>Data:
+            <a href='https://groveparkfoundation.org'>Community Development Project Data</a> Last Updated Jan 2019</p>
+        <h2>Type of Assets</h2>
+        <div id='legends'></div>
+        <div class='session' id='sliderbar'>
+            <h2>Year:
+                <label id='active-hour'>2015-2025</label>
+            </h2>
+            <input id='slider' class='row' type='range' min='2015' max='2025' step='1' value='2019' />
+            <label id='yr'></label>
+        </div>
+    </div>
+
+
+    <script>
+        var mydata = {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {
+                    "Year": 2020,
+                    "Name": "Elementary School",
+                    "Type": "school",
+                    "Number": 1,
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-84.4537, 33.778397]
+                }
+            }, {
+                "type": "Feature",
+                "properties": {
+                    "Year": 2017,
+                    "Name": "County Library",
+                    "Type": "library",
+                    "Number": 2
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-84.44721, 33.7745]
+                }
+            }]
+        }
+
+        // place with Mapbox token before start!
+        mapboxgl.accessToken = '';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v10',
+            center: [-84.4461, 33.7750],
+            zoom: 12
+        });
+
+        // legends
+        var legend = ['bank', 'gas station', 'library', 'school', 'park', 'restaurants'];
+        var colors = ['#a2719b', '#2dc4b2', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C'];
+        var legends = document.getElementById('legends');
+        for (i = 0; i < legend.length; i++) {
+            var layer = legend[i];
+            var color = colors[i];
+            var item = document.createElement('div');
+            var key = document.createElement('span');
+            key.className = 'legend-key';
+            key.style.backgroundColor = color;
+
+            var value = document.createElement('span');
+            value.innerHTML = layer;
+            item.appendChild(key);
+            item.appendChild(value);
+            legends.appendChild(item);
+        }
+
+        // data: 'https://xxx' link to database server with project data'
+        map.on('load', function () {
+            map.addLayer({
+                id: 'assets',
+                type: 'circle',
+                source: {
+                    type: 'geojson',
+                    data: mydata,
+                },
+                paint: {
+                    'circle-radius': [
+                        'interpolate',
+                        ['linear'],
+                        ['number', ['get', 'Number']],
+                        0, 4,
+                        5, 24
+                    ],
+                    'circle-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['number', ['get', 'Number']],
+                        0, '#a2719b',
+                        1, '#2dc4b2',
+                        2, '#FEB24C',
+                        3, '#FD8D3C',
+                        4, '#FC4E2A',
+                        5, '#E31A1C'
+                    ],
+                    'circle-opacity': 0.8
+                }
+            });
+        });
+        // slidebar
+        document.getElementById('slider').addEventListener('input', function (e) {
+            var year = parseInt(e.target.value);
+            map.setFilter('assets', ['<=', ['number', ['get', 'Year']], year]);
+            document.getElementById('yr').textContent = year;
+        });
+    </script>
+</body>
+</html>
