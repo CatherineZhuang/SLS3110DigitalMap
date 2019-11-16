@@ -80,6 +80,9 @@
     </div>
 
     <script type="text/javascript">
+        // will hold CSV data
+        var data = [];
+        
         document.querySelector("#file-input").addEventListener('change', function() {
             // files that user has chosen
             var all_files = this.files;
@@ -115,8 +118,8 @@
                 // contents as text
                 var text = e.target.result;
 
-                // will hold CSV data
-                var data = [];
+                // // will hold CSV data
+                // var data = [];
 
                 // split by line breaks
                 var rows = text.split("\r");
@@ -130,6 +133,9 @@
 
                 // CSV data
                 console.log(data);
+                buildJSON(data);
+                console.log(map.getSource("assets"));
+                map.getSource("assets").setData(userdata);
             });
 
             // file reading failed
@@ -141,27 +147,44 @@
             reader.readAsText(file);
         });
 
-        // var userdata = {
-        //     "type": "FeatureCollection",
-        //     "features": []
-        // }
+        var userdata = {
+            "type": "FeatureCollection",
+            "features": []
+        }
 
-        // for (var i=1; i < data.length; i++) {
-        //     console.log("here");
-        //     var item = {};
-        //     item["type"] = "Feature";
-        //     var propVal = {};
-        //     propVal["Year"] = data[i][0];
-        //     propVal["Name"] = data[i][1];
-        //     propVal["Type"] = data[i][2];
-        //     propVal["Number"] = data[i][3];
-        //     item["properties"] = propVal;
-        //     var geoVal = {};
-        //     geoVal["type"] = "Point";
-        //     geoVal["coordinates"] = [data[i][5], data[i][6]];
-        //     userdata["features"].push(item);
-        // }
-
+        function buildJSON(data) {
+            // for (var i=1; i < data.length; i++) {
+            //     console.log("here");
+            //     var item = {};
+            //     item["type"] = "Feature";
+            //     var propVal = {};
+            //     propVal["Year"] = parseInt(data[i][0]);
+            //     propVal["Name"] = data[i][1];
+            //     propVal["Type"] = data[i][2];
+            //     propVal["Number"] = parseInt(data[i][3]);
+            //     item["properties"] = propVal;
+            //     var geoVal = {};
+            //     geoVal["type"] = "Point";
+            //     geoVal["coordinates"] = [parseInt(data[i][5]), parseInt(data[i][6])];
+            //     item["geometry"] = geoVal;
+            //     userdata["features"].push(item);
+            // }
+            var test = {
+                "type": "Feature",
+                "properties": {
+                    "Year": 2020,
+                    "Name": "Elementary School",
+                    "Type": "school",
+                    "Number": 1,
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-84.4537, 33.778397]
+                }
+            };
+            userdata["features"].push(test);
+            console.log(userdata);
+        }
 
         var mydata = {
             "type": "FeatureCollection",
@@ -227,7 +250,7 @@
                 type: 'circle',
                 source: {
                     type: 'geojson',
-                    data: mydata,
+                    data: userdata,
                 },
                 paint: {
                     'circle-radius': [
