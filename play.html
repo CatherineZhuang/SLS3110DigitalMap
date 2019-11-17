@@ -118,9 +118,6 @@
                 // contents as text
                 var text = e.target.result;
 
-                // // will hold CSV data
-                // var data = [];
-
                 // split by line breaks
                 var rows = text.split("\r");
 
@@ -133,8 +130,10 @@
 
                 // CSV data
                 console.log(data);
+
+                // Build the new JSON file
                 buildJSON(data);
-                console.log(map.getSource("assets"));
+                // Update the map data source
                 map.getSource("assets").setData(userdata);
             });
 
@@ -153,37 +152,22 @@
         }
 
         function buildJSON(data) {
-            // for (var i=1; i < data.length; i++) {
-            //     console.log("here");
-            //     var item = {};
-            //     item["type"] = "Feature";
-            //     var propVal = {};
-            //     propVal["Year"] = parseInt(data[i][0]);
-            //     propVal["Name"] = data[i][1];
-            //     propVal["Type"] = data[i][2];
-            //     propVal["Number"] = parseInt(data[i][3]);
-            //     item["properties"] = propVal;
-            //     var geoVal = {};
-            //     geoVal["type"] = "Point";
-            //     geoVal["coordinates"] = [parseInt(data[i][5]), parseInt(data[i][6])];
-            //     item["geometry"] = geoVal;
-            //     userdata["features"].push(item);
-            // }
-            var test = {
-                "type": "Feature",
-                "properties": {
-                    "Year": 2020,
-                    "Name": "Elementary School",
-                    "Type": "school",
-                    "Number": 1,
-                },
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [-84.4537, 33.778397]
-                }
-            };
-            userdata["features"].push(test);
-            console.log(userdata);
+            for (var i=1; i < data.length; i++) {
+                console.log("here");
+                var item = {};
+                item["type"] = "Feature";
+                var propVal = {};
+                propVal["Year"] = parseInt(data[i][0]);
+                propVal["Name"] = data[i][1];
+                propVal["Type"] = data[i][2];
+                propVal["Number"] = parseInt(data[i][3]);
+                item["properties"] = propVal;
+                var geoVal = {};
+                geoVal["type"] = "Point";
+                geoVal["coordinates"] = [parseFloat(data[i][5]), parseFloat(data[i][6])];
+                item["geometry"] = geoVal;
+                userdata["features"].push(item);
+            }
         }
 
         var mydata = {
