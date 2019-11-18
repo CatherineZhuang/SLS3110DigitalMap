@@ -51,6 +51,20 @@
             overflow: auto;
         }
 
+        #info {
+            display: block;
+            position: relative;
+            margin: 0px auto;
+            width: 50%;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+            color: #222;
+            background: #fff;
+        }
+
     </style>
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
@@ -79,6 +93,7 @@
 <body>
 
     <div id='map'></div>
+    <pre id='info'></pre>
     <div id='console'>
         <h1>Grove Park Area Recent Development Projects</h1>
         <p>Data:
@@ -192,6 +207,7 @@
                 propVal["Name"] = data[i][1];
                 propVal["Type"] = data[i][2];
                 propVal["Number"] = parseInt(data[i][3]);
+                propVal["description"] = "display description";
                 item["properties"] = propVal;
                 var geoVal = {};
                 geoVal["type"] = "Point";
@@ -201,34 +217,34 @@
             }
         }
 
-        var mydata = {
-            "type": "FeatureCollection",
-            "features": [{
-                "type": "Feature",
-                "properties": {
-                    "Year": 2020,
-                    "Name": "Elementary School",
-                    "Type": "school",
-                    "Number": 1,
-                },
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [-84.4537, 33.778397]
-                }
-            }, {
-                "type": "Feature",
-                "properties": {
-                    "Year": 2017,
-                    "Name": "County Library",
-                    "Type": "library",
-                    "Number": 2
-                },
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [-84.44721, 33.7745]
-                }
-            }]
-        };
+        // var mydata = {
+        //     "type": "FeatureCollection",
+        //     "features": [{
+        //         "type": "Feature",
+        //         "properties": {
+        //             "Year": 2020,
+        //             "Name": "Elementary School",
+        //             "Type": "school",
+        //             "Number": 1,
+        //         },
+        //         "geometry": {
+        //             "type": "Point",
+        //             "coordinates": [-84.4537, 33.778397]
+        //         }
+        //     }, {
+        //         "type": "Feature",
+        //         "properties": {
+        //             "Year": 2017,
+        //             "Name": "County Library",
+        //             "Type": "library",
+        //             "Number": 2
+        //         },
+        //         "geometry": {
+        //             "type": "Point",
+        //             "coordinates": [-84.44721, 33.7745]
+        //         }
+        //     }]
+        // };
 
         // place with Mapbox token before start!
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFuY3l3bmciLCJhIjoiY2ptOGRueHF2MTVvdzNwbjM0YXV3eHY5MiJ9.CDTHY7P6jXqx9UQRoXIseA';
@@ -289,6 +305,69 @@
                     'circle-opacity': 0.8
                 }
             });
+        });
+
+        // Change the cursor to a pointer when the mouse is over the places layer.
+        map.on('mouseenter', 'assets', function () {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+        // Change it back to a pointer when it leaves.
+        map.on('mouseleave', 'assets', function () {
+            map.getCanvas().style.cursor = '';
+        });
+
+        // manages what type of click it is
+        var onDot = false;
+        // popup on dots
+        map.on('click', 'assets', function (e) {
+            onDot = true;
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var description = e.features[0].properties.description;
+            
+            // Ensure that if the map is zoomed out such that multiple
+            // copies of the feature are visible, the popup appears
+            // over the copy being pointed to.
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+            
+            new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(description)
+            .addTo(map);
+        });
+        // get coordinate
+        map.on('click', function (e) {
+            if (!onDot) {
+                document.getElementById('info').innerHTML =
+                // e.point is the x, y coordinates of the mousemove event relative
+                // to the top-left corner of the map
+                // JSON.stringify(e.point) + '<br />' +
+                // e.lngLat is the longitude, latitude geographical position of the event
+                JSON.stringify(e.lngLat.wrap());
+                var curClick = {
+                    "type": "Feature",
+                    "properties": {
+                        "Year": 0,
+                        "Name": "Click",
+                        "Type": "click",
+                        "Number": 1,
+                        "description": "just selected point"
+                    },
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [e.lngLat.lng, e.lngLat.lat]
+                    }
+                }
+                includeClick = {
+                    "type": "FeatureCollection",
+                    "features": userdata['features'].concat([curClick])
+                }
+                console.log(includeClick)
+                map.getSource("assets").setData(includeClick);
+            } else {
+                onDot = false;
+            }
         });
         // slidebar
         document.getElementById('slider').addEventListener('input', function (e) {
