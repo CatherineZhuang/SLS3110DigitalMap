@@ -53,6 +53,27 @@
 
     </style>
 
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-firestore.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCwplrNiLnJIOvslAUQXX7WNrEkKSWfUhE",
+            authDomain: "mapcom-209c9.firebaseapp.com",
+            databaseURL: "https://mapcom-209c9.firebaseio.com",
+            projectId: "mapcom-209c9",
+            storageBucket: "mapcom-209c9.appspot.com",
+            messagingSenderId: "48147695104",
+            appId: "1:48147695104:web:4e142081ceaf45dcdc7ae5",
+            measurementId: "G-4R3DV299WF"
+        };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+    </script>
+
 </head>
 
 <body>
@@ -115,6 +136,7 @@
 
             // rough algorithm to get CSV data from text
             reader.addEventListener('load', function(e) {
+                data = [];
                 // contents as text
                 var text = e.target.result;
 
@@ -133,6 +155,15 @@
 
                 // Build the new JSON file
                 buildJSON(data);
+
+                // Store to firebase
+                var datetime = String(new Date().getTime());
+                db.collection("mapdata").doc(datetime).set({
+                    userdata,
+                }).then(function(docRef) {
+                    console.log("stored new map data to firebase");
+                });
+
                 // Update the map data source
                 map.getSource("assets").setData(userdata);
             });
