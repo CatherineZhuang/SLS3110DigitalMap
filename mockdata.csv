@@ -1,1 +1,3 @@
-﻿year,name,category,size,shape,latitude,longitude2020,elementary school,education,1,point,-84.4537,33.7783972019,community library,education,2,point,-84.44721,33.7745
+year,name,category,size,shape,latitude,longitude
+2020,elementary school,education,1,point,-84.4537,33.778397
+2019,community library,education,2,point,-84.44721,33.7745

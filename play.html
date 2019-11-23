@@ -254,6 +254,7 @@
             center: [-84.4461, 33.7750],
             zoom: 12
         });
+        var points = [];
 
         // legends
         var legend = ['bank', 'gas station', 'library', 'school', 'park', 'restaurants'];
@@ -273,6 +274,55 @@
             item.appendChild(value);
             legends.appendChild(item);
         }
+
+        map.on('load', function () {       /* 为map添加load事件监听器 */
+            map.addSource("route", {       /* addSource()函数添加资源,资源ID是route */
+                "type": "geojson",
+                lineMetrics: true,
+                "data": {                  /* GeoJSON格式数据 */
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                        "type": "LineString",
+                        "coordinates": [
+                            [-84.395055,33.760312],
+                            [-84.395065,33.760812],
+                            [-84.399055,33.770312],
+                            [-84.480055,33.790312],
+                            [-84.535055,33.820312],
+                            [-84.655055,33.830312],
+                            [-84.751566, 33.843340]
+                        ]
+                    }
+                }
+            });
+        
+            map.addLayer({                 /* 为地图添加layer */
+                "id": "route",             /* layer id是route */
+                "type": "line",            /* line类型layer*/
+                "source": "route",         /* 资源引用的是上面定义的source*/
+                "layout": {
+                    "line-join": "round",  /* 线条相交的形状 */
+                    "line-cap": "round"    /* 线条末端形状 */
+                },
+                "paint": {
+                    "line-color": "#888",  /* 线条颜色 */
+                    "line-width": 8,       /* 线条宽度 */
+                    'line-gradient': [
+                        'interpolate',
+                        ['linear'],
+                        ['line-progress'],
+                        0, "blue",
+                        0.1, "royalblue",
+                        0.3, "cyan",
+                        0.5, "lime",
+                        0.7, "yellow",
+                        1, "red"
+                        ]
+                }
+            });
+        });
+
 
         // data: 'https://xxx' link to database server with project data'
         map.on('load', function () {
@@ -337,7 +387,7 @@
             .addTo(map);
         });
         // get coordinate
-        map.on('click', function (e) {
+        map.on('click', function (e, points) {
             if (!onDot) {
                 document.getElementById('info').innerHTML =
                 // e.point is the x, y coordinates of the mousemove event relative
@@ -365,6 +415,8 @@
                 }
                 console.log(includeClick)
                 map.getSource("assets").setData(includeClick);
+                var point = [e.lngLat.lng, e.lngLat.lat];
+                Arraypush(point);
             } else {
                 onDot = false;
             }
@@ -375,6 +427,10 @@
             map.setFilter('assets', ['<=', ['number', ['get', 'Year']], year]);
             document.getElementById('yr').textContent = year;
         });
+        function Arraypush(point) {
+            points.push(point);
+        }
+
     </script>
 </body>
 </html>

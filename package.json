@@ -1,0 +1,40 @@
+{
+  "name": "csv2geojson",
+  "version": "5.1.1",
+  "description": "convert CSV files to GeoJSON",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mapbox/csv2geojson.git"
+  },
+  "scripts": {
+    "test": "eslint main.js && mocha -R spec",
+    "start": "node main.js"
+  },
+  "files": [
+    "csv2geojson.js",
+    "csv2geojson",
+    "index.js"
+  ],
+  "bin": {
+    "csv2geojson": "csv2geojson"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^13.1.0",
+    "eslint": "3.4.0",
+    "eslint-config-mourner": "2.0.1",
+    "expect.js": "~0.3.1",
+    "mocha": "~3.0",
+    "mocha-phantomjs": "~4.1.0"
+  },
+  "dependencies": {
+    "optimist": "~0.6.1",
+    "d3-dsv": "1.0.1",
+    "@mapbox/sexagesimal": "^1.1.0",
+    "concat-stream": "~1.5.1"
+  },
+  "engines": {
+    "node": ">=6"
+  }
+}
