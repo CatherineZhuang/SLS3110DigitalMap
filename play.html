@@ -206,12 +206,12 @@
                 propVal["Year"] = parseInt(data[i][0]);
                 propVal["Name"] = data[i][1];
                 propVal["Type"] = data[i][2];
-                propVal["Number"] = parseInt(data[i][3]);
-                propVal["description"] = "display description";
+                propVal["Number"] = 1;
+                propVal["description"] = data[i][3];
                 item["properties"] = propVal;
                 var geoVal = {};
                 geoVal["type"] = "Point";
-                geoVal["coordinates"] = [parseFloat(data[i][5]), parseFloat(data[i][6])];
+                geoVal["coordinates"] = [parseFloat(data[i][5]), parseFloat(data[i][4])];
                 item["geometry"] = geoVal;
                 userdata["features"].push(item);
             }
