@@ -90,7 +90,7 @@
 
 </head>
 
-<body>
+<body onload="getUserData()">
 
     <div id='map'></div>
     <pre id='info'></pre>
@@ -116,8 +116,24 @@
     </div>
 
     <script type="text/javascript">
+        
+        var userdata = {
+            "type": "FeatureCollection",
+            "features": []
+        }
+
         // will hold CSV data
         var data = [];
+
+        function getUserData() {
+            db.collection("mapdata").orderBy("time", "desc").limit(1).get()
+            .then((snapshot) => {
+                console.log(snapshot)
+                snapshot.docs.forEach(doc => {
+                    userdata = (doc.data()['userdata']);
+                });
+            });
+        }
         
         document.querySelector("#file-input").addEventListener('change', function() {
             // files that user has chosen
@@ -175,6 +191,7 @@
                 var datetime = String(new Date().getTime());
                 db.collection("mapdata").doc(datetime).set({
                     userdata,
+                    time: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(function(docRef) {
                     console.log("stored new map data to firebase");
                 });
@@ -192,11 +209,6 @@
             reader.readAsText(file);
         });
 
-        var userdata = {
-            "type": "FeatureCollection",
-            "features": []
-        }
-
         function buildJSON(data) {
             for (var i=1; i < data.length; i++) {
                 console.log("here");
@@ -206,45 +218,17 @@
                 propVal["Year"] = parseInt(data[i][0]);
                 propVal["Name"] = data[i][1];
                 propVal["Type"] = data[i][2];
-                propVal["Number"] = parseInt(data[i][3]);
-                propVal["description"] = "display description";
+                propVal["Number"] = 1;
+                propVal["description"] = data[i][3];
                 item["properties"] = propVal;
                 var geoVal = {};
                 geoVal["type"] = "Point";
-                geoVal["coordinates"] = [parseFloat(data[i][5]), parseFloat(data[i][6])];
+                geoVal["coordinates"] = [parseFloat(data[i][5]), parseFloat(data[i][4])];
                 item["geometry"] = geoVal;
+                userdata["features"] = []
                 userdata["features"].push(item);
             }
         }
-
-        // var mydata = {
-        //     "type": "FeatureCollection",
-        //     "features": [{
-        //         "type": "Feature",
-        //         "properties": {
-        //             "Year": 2020,
-        //             "Name": "Elementary School",
-        //             "Type": "school",
-        //             "Number": 1,
-        //         },
-        //         "geometry": {
-        //             "type": "Point",
-        //             "coordinates": [-84.4537, 33.778397]
-        //         }
-        //     }, {
-        //         "type": "Feature",
-        //         "properties": {
-        //             "Year": 2017,
-        //             "Name": "County Library",
-        //             "Type": "library",
-        //             "Number": 2
-        //         },
-        //         "geometry": {
-        //             "type": "Point",
-        //             "coordinates": [-84.44721, 33.7745]
-        //         }
-        //     }]
-        // };
 
         // place with Mapbox token before start!
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFuY3l3bmciLCJhIjoiY2ptOGRueHF2MTVvdzNwbjM0YXV3eHY5MiJ9.CDTHY7P6jXqx9UQRoXIseA';
@@ -429,6 +413,7 @@
         });
         function Arraypush(point) {
             points.push(point);
+            console.log(points);
         }
 
     </script>
