@@ -131,6 +131,7 @@
                 console.log(snapshot)
                 snapshot.docs.forEach(doc => {
                     userdata = (doc.data()['userdata']);
+                    console.log("Initial Map Data: ", userdata);
                 });
             });
         }
@@ -210,6 +211,7 @@
         });
 
         function buildJSON(data) {
+            userdata["features"] = []
             for (var i=1; i < data.length; i++) {
                 console.log("here");
                 var item = {};
@@ -225,7 +227,6 @@
                 geoVal["type"] = "Point";
                 geoVal["coordinates"] = [parseFloat(data[i][5]), parseFloat(data[i][6])];
                 item["geometry"] = geoVal;
-                userdata["features"] = []
                 userdata["features"].push(item);
             }
         }
