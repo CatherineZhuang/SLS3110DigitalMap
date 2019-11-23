@@ -231,13 +231,21 @@
             }
         }
 
+        // set what the min map shows
+        var bounds = [
+            [-85.98113916570458, 33.17603836353943], // Southwest coordinates
+            [-83.05179537583291, 34.60053183069131]  // Northeast coordinates
+        ];
+
         // place with Mapbox token before start!
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFuY3l3bmciLCJhIjoiY2ptOGRueHF2MTVvdzNwbjM0YXV3eHY5MiJ9.CDTHY7P6jXqx9UQRoXIseA';
+        
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v10',
             center: [-84.4461, 33.7750],
-            zoom: 12
+            zoom: 12,
+            maxBounds: bounds,
         });
 
         // legends
