@@ -1,3 +1,5 @@
+
+// example geojson
 {
   "type": "FeatureCollection",
   "features": [{
@@ -26,3 +28,33 @@
     }
   }]
 }
+
+// example js json
+var mydata = {
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "properties": {
+            "Year": 2020,
+            "Name": "Elementary School",
+            "Type": "school",
+            "Number": 1,
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [-84.4537, 33.778397]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Year": 2017,
+            "Name": "County Library",
+            "Type": "library",
+            "Number": 2
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [-84.44721, 33.7745]
+        }
+    }]
+};
