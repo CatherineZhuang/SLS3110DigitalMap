@@ -18,7 +18,7 @@
 
         #demo-container {
             text-align: center;
-            margin: 40px auto;
+            margin: 20px auto;
         }
 
         #file-input-label {
@@ -32,6 +32,10 @@
         }
 
         #file-input {
+            display: none;
+        }
+
+        #sign-in {
             display: none;
         }
 
@@ -107,6 +111,19 @@
             <input id='slider' class='row' type='range' min='2015' max='2025' step='1' value='2019' />
             <label id='yr'></label>
         </div>
+        <div class="form-popup" id="myForm">
+            <form>
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter Email" name="email" required>
+
+                <label for="password"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
+
+                <Button id="file-input-label" onclick="fireauthLogin()">Admin Login</Button>
+
+            </form>
+        </div>
+        
         <div id="demo-container">
             <label for="file-input" id="file-input-label">Upload CSV File</label>
             <input type="file" id="file-input" accept="text/csv" />
@@ -134,6 +151,20 @@
                     console.log("Initial Map Data: ", userdata);
                 });
             });
+        }
+
+        function fireauthLogin() {
+            console.log("here");
+            e.preventDefault();
+            e.stopPropagation();
+            var email = document.querySelector('#email').value;
+            var password = document.querySelector('#password').value
+            var credential = firebase.auth.EmailAuthProvider.credential(email, password);
+            console.log(credential);
+            var auth = firebase.auth();
+            console.log(auth);
+            var currentUser = auth.currentUser;
+
         }
         
         document.querySelector("#file-input").addEventListener('change', function() {
