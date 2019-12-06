@@ -1,4 +1,4 @@
-# Grove Park Foundation Investment/Future Asset Mapping Tool
+# Grove Park Foundation Future Investment Mapping Tool
 
 Digital Map User Guide
 
@@ -60,15 +60,17 @@ Legend: Right above the scroll feature is a legend that shows the different colo
 
 Icons: The project icons that pop are interactive. When you click on the icons, information and sometimes links will pop up, allowing the user to inform him or herself about the project that was selected. 
 
-![alt text](images/map\-detail.png)
+![alt text](images/map_detail.png)
 
 
 Login: The login allows the user to edit the CSV file. This login is confidential in order to prevent the map from being overrun with false project information and protect the legitimacy of actual projects. 
 
   before login:
+  
   ![alt text](images/login.png)
   
   after login:
+  
   ![alt text](images/upload.png)
 
 If you have any further questions, please feel free to contact any of our team members:
