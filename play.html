@@ -18,10 +18,24 @@
 
         #demo-container {
             text-align: center;
-            margin: 40px auto;
+            margin: 20px auto;
         }
 
         #file-input-label {
+            width: 200px;
+            cursor: pointer;
+            background-color: #336699;
+            color: white;
+            padding: 10px;
+            display: none;
+            margin: 0 auto;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        #login-button {
             width: 200px;
             cursor: pointer;
             background-color: #336699;
@@ -31,7 +45,7 @@
             margin: 0 auto;
         }
 
-        #file-input {
+        #sign-in {
             display: none;
         }
 
@@ -68,8 +82,9 @@
     </style>
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/6.3.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.5.0/firebase-auth.js"></script>
 
     <script>
         // Your web app's Firebase configuration
@@ -107,9 +122,20 @@
             <input id='slider' class='row' type='range' min='2015' max='2025' step='1' value='2019' />
             <label id='yr'></label>
         </div>
+        <div class="form-popup">
+            <div class="form-popup" id="loginForm">
+                <label for="email"><b>Email</b></label>
+                <input id="email" type="text" placeholder="Enter Email" name="email" style="margin-bottom: 10px;" required>
+
+                <label for="password"><b>Password</b></label>
+                <input id="password" type="password" placeholder="Enter Password" name="psw" style="margin-bottom: 20px" required>
+            </div>
+            <Button id="login-button" onclick="fireauthLogin()">Admin Login</Button>
+        </div>
+        
         <div id="demo-container">
             <label for="file-input" id="file-input-label">Upload CSV File</label>
-            <input type="file" id="file-input" accept="text/csv" />
+            <input type="file" id="file-input" accept="text/csv"/>
             <div id="file-progress-container"><span id="file-progress-percent"></span>% read</div>
             <div id="contents"></div>
         </div>
@@ -130,8 +156,35 @@
             .then((snapshot) => {
                 snapshot.docs.forEach(doc => {
                     userdata = (doc.data()['userdata']);
+                    console.log("Initial Map Data: ", userdata);
                 });
             });
+        }
+
+        function fireauthLogin() {
+            console.log("here");
+            var email = document.querySelector('#email').value;
+            var password = document.querySelector('#password').value;
+
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then(function(firebaseUser) {
+                    // Success 
+                    console.log("login success");
+                    document.getElementById('loginForm').innerHTML = "You have logged in as an Admin.";
+                    document.getElementById('login-button').style.display = "none";
+                    document.getElementById('file-input-label').style.display = "block";
+                })
+                .catch(function(error) {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.log(errorMessage);
+                    var state = 
+                        "<p style='font-size:11px;color:red'>You have not logged in.</p>" +
+                        "<p style='font-size:11px;color:red;'>Either your password is incorrect, or the account does not exist.</p><Br>"
+                    document.getElementById('loginForm').innerHTML += state;
+                });
+
         }
         
         document.querySelector("#file-input").addEventListener('change', function() {
@@ -236,13 +289,21 @@
             });
         }
 
+        // set what the min map shows
+        var bounds = [
+            [-85.98113916570458, 33.17603836353943], // Southwest coordinates
+            [-83.05179537583291, 34.60053183069131]  // Northeast coordinates
+        ];
+
         // place with Mapbox token before start!
         mapboxgl.accessToken = 'pk.eyJ1IjoibmFuY3l3bmciLCJhIjoiY2ptOGRueHF2MTVvdzNwbjM0YXV3eHY5MiJ9.CDTHY7P6jXqx9UQRoXIseA';
+        
         var map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/light-v10',
             center: [-84.4461, 33.7750],
-            zoom: 12
+            zoom: 12,
+            maxBounds: bounds,
         });
 
         // legends
