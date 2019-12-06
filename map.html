@@ -118,7 +118,7 @@
 
 </head>
 
-<body onload="getUserData()">
+<body onload="getUserData();">
 
     <div id='map'></div>
     <pre id='info'></pre>
@@ -290,6 +290,7 @@
 
         function buildJSON(data) {
             findColor(data).then(colorings => {
+                console.log(colorings);
                 var dataObj = [];
                 for (var i=1; i < data.length; i++) {
                     var item = {};
@@ -299,7 +300,8 @@
                     propVal["Name"] = data[i][1];
                     propVal["Type"] = data[i][2];
                     propVal["Number"] = colorings[i];
-                    propVal["description"] = data[i][3];
+                    propVal["description"] = "<strong>Project Descriptions: </strong><p>" + data[i][3] + "</p>";
+                    propVal["Icon"] = colorings[i];
                     item["properties"] = propVal;
                     var geoVal = {};
                     geoVal["type"] = "Point";
@@ -308,6 +310,7 @@
                     dataObj.push(item);
                 }
                 userdata["features"] = dataObj;
+                console.log(userdata);
                 // Store to firebase
                 var datetime = String(new Date().getTime());
                 db.collection("mapdata").doc(datetime).set({
@@ -339,7 +342,7 @@
         
         var map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/light-v10',
+            style: 'mapbox://styles/mapbox/streets-v11',
             center: [-84.4461, 33.7750],
             zoom: 12,
             maxBounds: bounds,
@@ -348,15 +351,17 @@
         // legends
         var legend = ['Trail', 'Park', 'Business', 'School', 'Reconstruction', 'Others'];
         var colors = ['#a2719b', '#2dc4b2', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#E31A3C'];
+        var icons = ["park-15", "garden-15", "suitcase-15", "library-15", "hardware-15", "marker-15", "marker-15"];
         var legends = document.getElementById('legends');
         for (i = 0; i < legend.length; i++) {
             var layer = legend[i];
             var color = colors[i];
             var item = document.createElement('div');
             var key = document.createElement('span');
-            key.className = 'legend-key';
-            key.style.backgroundColor = color;
-
+            var img = document.createElement('img'); 
+            img.src = './all_maki_icons/svgs/' + icons[i] + '.svg';
+            img.className = 'legend-key';
+            key.appendChild(img);
             var value = document.createElement('span');
             value.innerHTML = layer;
             item.appendChild(key);
@@ -367,32 +372,45 @@
         // data: 'https://xxx' link to database server with project data'
         map.on('load', function () {
             map.addLayer({
-                id: 'assets',
-                type: 'circle',
-                source: {
-                    type: 'geojson',
-                    data: userdata,
+                "id": 'assets',
+                "type": "symbol",
+                "source": {
+                    "type": 'geojson',
+                    "data": userdata,
                 },
-                paint: {
-                    'circle-radius': [
-                        'interpolate',
-                        ['linear'],
-                        ['number', ['get', 'Number']],
-                        5, 10
+                "layout": {
+                    "icon-image": [
+                        "match",
+                        ["number", ["get", "Icon"]],
+                        0,
+                        "park-15",
+                        1,
+                        "garden-15",
+                        2,
+                        "suitcase-15",
+                        3,
+                        "library-15",
+                        4,
+                        "hardware-15",
+                        5,
+                        "marker-15",
+                        "marker-15",
                     ],
-                    'circle-color': [
-                        'interpolate',
-                        ['linear'],
-                        ['number', ['get', 'Number']],
-                        -2, '#000000',
-                        0, '#A2719B',
-                        1, '#2dc4b2',
-                        2, '#FEB24C',
-                        3, '#FD8D3C',
-                        4, '#FC4E2A',
-                        5, '#E31A1C'
+                    "icon-size": 2,
+                    "icon-allow-overlap": true
+                },
+                "paint": {
+                    "icon-color":[
+                        "match",
+                        ["number", ["get", "Icon"]],
+                        0, "#a2719b",
+                        1, "#2dc4b2",
+                        2, "#FEB24C",
+                        3, "#FD8D3C",
+                        4, "#FC4E2A",
+                        5, "#E31A1C",
+                        "#E31A3C",
                     ],
-                    'circle-opacity': 0.8
                 }
             });
         });
@@ -441,26 +459,18 @@
                         "Year": 0,
                         "Name": "Click",
                         "Type": "click",
+                        "Icon": 5,
                         "Number": -2,
                         "description": "just selected point"
                     },
                     "geometry": {
                         "type": "Point",
                         "coordinates": [e.lngLat.lng, e.lngLat.lat]
-                    },
-                    properties: {
-                        icon: {
-                            iconUrl: 'https://www.mapbox.com/mapbox.js/assets/images/astronaut1.png',
-                            iconSize: [50, 50], // size of the icon
-                            iconAnchor: [25, 25], // point of the icon which will correspond to marker's location
-                            popupAnchor: [0, -25], // point from which the popup should open relative to the iconAnchor
-                            className: 'dot'
-                        }
                     }
                 }
                 includeClick = {
                     "type": "FeatureCollection",
-                    "features": userdata['features'].concat([curClick])
+                    "features": userdata['features'].concat([curClick]),
                 }
                 map.getSource("assets").setData(includeClick);
             } else {
