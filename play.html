@@ -27,8 +27,8 @@
             background-color: #336699;
             color: white;
             padding: 10px;
-            display: none;
             margin: 0 auto;
+            display: none;
         }
 
         #file-input {
@@ -36,13 +36,26 @@
         }
 
         #login-button {
-            width: 200px;
+            width: 225px;
             cursor: pointer;
             background-color: #336699;
             color: white;
+            font-size: 15px;
             padding: 10px;
             display: block;
             margin: 0 auto;
+        }
+
+        #logout-button {
+            width: 225px;
+            cursor: pointer;
+            background-color: #336699;
+            color: white;
+            font-size: 15px;
+            padding: 10px;
+            display: none;
+            margin: 0 auto;
+            margin-top: 10px;
         }
 
         #sign-in {
@@ -123,14 +136,16 @@
             <label id='yr'></label>
         </div>
         <div class="form-popup">
-            <div class="form-popup" id="loginForm">
+            <div class="form-popup" id="loginForm" style="display:block">
                 <label for="email"><b>Email</b></label>
-                <input id="email" type="text" placeholder="Enter Email" name="email" style="margin-bottom: 10px;" required>
+                <input id="email" type="text" placeholder="Enter Email" name="email" style="margin-bottom: 10px;" required><Br>
 
                 <label for="password"><b>Password</b></label>
                 <input id="password" type="password" placeholder="Enter Password" name="psw" style="margin-bottom: 20px" required>
             </div>
+            <p id="message" style='font-size:11px;color:black'>Please login as Admin to update the map.</p>
             <Button id="login-button" onclick="fireauthLogin()">Admin Login</Button>
+            <Button id="logout-button" onclick="fireauthLogout()">Admin Logout</Button>
         </div>
         
         <div id="demo-container">
@@ -162,28 +177,51 @@
         }
 
         function fireauthLogin() {
-            console.log("here");
             var email = document.querySelector('#email').value;
             var password = document.querySelector('#password').value;
 
             firebase.auth().signInWithEmailAndPassword(email, password)
                 .then(function(firebaseUser) {
                     // Success 
-                    console.log("login success");
-                    document.getElementById('loginForm').innerHTML = "You have logged in as an Admin.";
+
+                    document.getElementById('loginForm').style.display = "none";
                     document.getElementById('login-button').style.display = "none";
+                    document.getElementById('logout-button').style.display = "block";
                     document.getElementById('file-input-label').style.display = "block";
+                    document.getElementById('message').style.color = "black";
+                    document.getElementById('message').innerHTML = "You have logged in as an Admin. You may upload the map.";
                 })
                 .catch(function(error) {
                     // Handle Errors here.
                     var errorCode = error.code;
                     var errorMessage = error.message;
                     console.log(errorMessage);
-                    var state = 
-                        "<p style='font-size:11px;color:red'>You have not logged in.</p>" +
-                        "<p style='font-size:11px;color:red;'>Either your password is incorrect, or the account does not exist.</p><Br>"
-                    document.getElementById('loginForm').innerHTML += state;
+                    document.getElementById('loginForm').style.display = "block";
+                    document.getElementById('login-button').style.display = "block";
+                    document.getElementById('logout-button').style.display = "none";
+                    document.getElementById('file-input-label').style.display = "none";
+                    document.getElementById('message').style.color = "red";
+                    document.getElementById('message').innerHTML = "You have not logged in. Either your password is incorrect, or the account does not exist.";
                 });
+
+        }
+
+        function fireauthLogout() {
+            firebase.auth().signOut().then(function() {
+              // Sign-out successful.
+              console.log("Logout successful");
+              document.getElementById('loginForm').style.display = "block";
+              document.getElementById('login-button').style.display = "block";
+              document.getElementById('logout-button').style.display = "none";
+              document.getElementById('file-input-label').style.display = "none";
+              document.getElementById('message').innerHTML = "";
+            }).catch(function(error) {
+              // An error happened.
+              document.getElementById('message').style.color = "red";
+              document.getElementById('message').innerHTML = "Did not successfully Logout. Please try again.";
+              var errorMessage = error.message;
+              console.log(errorMessage);
+            });
 
         }
         
@@ -423,7 +461,6 @@
                     "type": "FeatureCollection",
                     "features": userdata['features'].concat([curClick])
                 }
-                console.log(includeClick)
                 map.getSource("assets").setData(includeClick);
             } else {
                 onDot = false;
