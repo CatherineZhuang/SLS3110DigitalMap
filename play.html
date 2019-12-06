@@ -285,6 +285,7 @@
 
             // read as text file
             reader.readAsText(file);
+            document.querySelector('#file-input').value = '';
         });
 
         function buildJSON(data) {
