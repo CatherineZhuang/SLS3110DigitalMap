@@ -96,8 +96,8 @@
     <pre id='info'></pre>
     <div id='console'>
         <h1>Grove Park Area Recent Development Projects</h1>
-        <p>Data:
-            <a href='https://groveparkfoundation.org'>Community Development Project Data</a> Last Updated Jan 2019</p>
+        <p>Data Source:
+            <a href='https://groveparkfoundation.org'>Grove Park Foundation</a></p>
         <h2>Type of Assets</h2>
         <div id='legends'></div>
         <div class='session' id='sliderbar'>
@@ -128,7 +128,6 @@
         function getUserData() {
             db.collection("mapdata").orderBy("time", "desc").limit(1).get()
             .then((snapshot) => {
-                console.log(snapshot)
                 snapshot.docs.forEach(doc => {
                     userdata = (doc.data()['userdata']);
                 });
@@ -247,8 +246,8 @@
         });
 
         // legends
-        var legend = ['Pathway', 'Park', 'Business', 'School', 'Others'];
-        var colors = ['#a2719b', '#2dc4b2', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C'];
+        var legend = ['Trail', 'Park', 'Business', 'School', 'Reconstruction', 'Others'];
+        var colors = ['#a2719b', '#2dc4b2', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C', '#E31A3C'];
         var legends = document.getElementById('legends');
         for (i = 0; i < legend.length; i++) {
             var layer = legend[i];
